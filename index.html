@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <title>SCOUT — 검색</title>
+  <style>
+    :root{--purple:#7545bb;--ink:#202124;--gray:#5f6368;--border:#dfe1e5;--bg:#fff;--soft:#f8f9fa}
+    *{box-sizing:border-box} html,body{margin:0;min-height:100%;font-family:Arial,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:var(--bg);color:var(--ink)}
+    button,input{font:inherit} button{cursor:pointer} button:focus-visible,input:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
+    .app{min-height:100svh}.home{display:flex;flex-direction:column;align-items:center;min-height:100svh;padding:0 19px}
+    .top{width:100%;height:58px;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#3c4043}
+    .top-left,.top-right{display:flex;align-items:center;gap:19px}.top button{border:0;background:transparent;color:inherit;padding:6px 0}
+    .avatar{width:30px;height:30px;border-radius:50%;background:#e8eaed;display:grid;place-items:center;color:#70757a;overflow:hidden}
+    .dots{width:18px;height:18px;display:grid;grid-template-columns:repeat(3,4px);gap:3px;align-content:center;justify-content:center}.dots i{width:4px;height:4px;background:#5f6368;border-radius:50%}
+    .home-main{width:100%;max-width:620px;display:flex;flex-direction:column;align-items:center;margin-top:clamp(100px,23vh,195px)}
+    .logo{font-weight:700;letter-spacing:-2.6px;color:var(--purple);font-size:clamp(48px,14vw,70px);line-height:1.15;margin-bottom:30px;user-select:none}
+    .search-form{width:100%}.search-pill{height:52px;border-radius:28px;display:flex;align-items:center;gap:14px;padding:0 15px;border:1px solid var(--border);box-shadow:0 1px 5px #3c404316;background:white}
+    .search-pill:focus-within{box-shadow:0 2px 8px #3c40432a}.search-pill svg{flex:none}.search-input{min-width:0;flex:1;border:0;background:transparent;font-size:16px;color:var(--ink);outline:none!important}
+    .search-input::placeholder{color:#70757a}.icon-button{background:transparent;border:0;display:grid;place-items:center;padding:4px;color:#5f6368}.primary-search{width:34px;height:34px;border:0;background:var(--purple);color:white;border-radius:50%;display:grid;place-items:center;flex:none}
+    .results{display:none}.results-header{position:sticky;top:0;background:white;z-index:3;border-bottom:1px solid #ebebeb;padding:13px 16px 0}
+    .results-top{display:flex;align-items:center;gap:12px;max-width:720px;margin:auto}.small-logo{font-weight:700;font-size:28px;letter-spacing:-1.5px;color:var(--purple);white-space:nowrap}
+    .results-top .search-pill{height:46px;gap:8px;padding:0 11px}.results-top .primary-search{width:30px;height:30px}
+    .tabs{display:flex;max-width:720px;margin:18px auto 0;gap:24px;overflow:auto;white-space:nowrap;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tab{border:0;background:transparent;color:#70757a;padding:0 0 12px;font-size:13px}.tab.active{border-bottom:3px solid var(--purple);color:var(--purple);font-weight:600}
+    .results-body{max-width:720px;margin:0 auto;padding:22px 20px 40px}.count{color:#70757a;font-size:12px;margin-bottom:48px}.empty{text-align:center;padding:0 8px}.empty-icon{width:68px;height:68px;border-radius:50%;background:#f1eafa;display:grid;place-items:center;margin:0 auto 23px;color:var(--purple)}
+    .empty h1{font-size:19px;font-weight:600;line-height:1.5;margin:0 0 12px}.empty p{margin:0;color:#5f6368;font-size:14px;line-height:1.7}.back{background:white;border:1px solid #dadce0;border-radius:22px;color:var(--purple);font-size:13px;padding:10px 18px;margin-top:30px}
+    .show-results .home{display:none}.show-results .results{display:block}
+    @media(max-width:360px){.results-top{gap:8px}.small-logo{font-size:24px}.results-header{padding-left:11px;padding-right:11px}.tabs{gap:20px}.home-main{margin-top:21vh}}
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+  <section class="home" id="home" aria-label="SCOUT 검색 홈">
+    <nav class="top" aria-label="상단 탐색"><div class="top-left"><span>전체</span><span>이미지</span></div><div class="top-right"><span class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="avatar" aria-label="기본 프로필"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.2 21c.2-4.3 3.2-7 7.8-7s7.6 2.7 7.8 7Z"/></svg></span></div></nav>
+    <main class="home-main">
+      <div class="logo" aria-label="SCOUT">SCOUT</div>
+      <form id="home-form" class="search-form" role="search">
+        <div class="search-pill">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg>
+          <input id="home-input" class="search-input" name="q" type="search" placeholder="검색어를 입력하시오." value="" autocomplete="off" aria-label="검색어 입력">
+          <button class="primary-search" type="submit" title="검색" aria-label="검색"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></button>
+        </div>
+      </form>
+    </main>
+  </section>
+  <section class="results" id="results" aria-label="검색 결과">
+    <header class="results-header">
+      <div class="results-top"><span class="small-logo">SCOUT</span>
+        <form id="result-form" class="search-form" role="search"><div class="search-pill">
+          <input id="result-input" class="search-input" type="search" name="q" autocomplete="off" aria-label="검색어 수정">
+          <button class="primary-search" type="submit" title="다시 검색" aria-label="다시 검색"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></button>
+        </div></form>
+      </div>
+      <div class="tabs" aria-label="검색 분류"><button class="tab active" type="button">전체</button><button class="tab" type="button">이미지</button><button class="tab" type="button">뉴스</button><button class="tab" type="button">동영상</button><button class="tab" type="button">지도</button></div>
+    </header>
+    <main class="results-body">
+      <div class="count">검색 결과 약 0개</div>
+      <div class="empty">
+        <div class="empty-icon" aria-hidden="true"><svg width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5.5 5.5M8 9l5 5m0-5-5 5"/></svg></div>
+        <h1 id="empty-title">검색 결과가 없습니다.</h1>
+        <p>검색어와 일치하는 정보를 찾을 수 없습니다.</p>
+        <button class="back" id="back-home" type="button">검색 페이지로 돌아가기</button>
+      </div>
+    </main>
+  </section>
+</div>
+<script>
+(()=>{
+  'use strict';
+  const app=document.getElementById('app'), homeInput=document.getElementById('home-input'), resultInput=document.getElementById('result-input');
+  const search=(text, push=true)=>{
+    const q=String(text??'').trim();
+    if(!q){(app.classList.contains('show-results')?resultInput:homeInput).focus();return;}
+    homeInput.value=q;resultInput.value=q;app.classList.add('show-results');
+    document.title=`${q} - SCOUT 검색`;
+    if(push)history.pushState({q},'',`${location.pathname}?q=${encodeURIComponent(q)}`);
+    window.scrollTo(0,0);
+  };
+  const home=(push=true)=>{app.classList.remove('show-results');document.title='SCOUT — 검색';if(push)history.pushState({},'',location.pathname);window.scrollTo(0,0);};
+  document.getElementById('home-form').addEventListener('submit',e=>{e.preventDefault();search(homeInput.value)});
+  document.getElementById('result-form').addEventListener('submit',e=>{e.preventDefault();search(resultInput.value)});
+  document.getElementById('back-home').addEventListener('click',()=>home());
+  document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));tab.classList.add('active');}));
+  window.addEventListener('popstate',()=>{const q=new URLSearchParams(location.search).get('q');if(q)search(q,false);else home(false)});
+  const initial=new URLSearchParams(location.search).get('q');if(initial)search(initial,false);
+})();
+</script>
+</body>
+</html>
